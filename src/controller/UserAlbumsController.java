@@ -177,6 +177,18 @@ public class UserAlbumsController {
     }
 
     /**
+     * Opens the search screen.
+     */
+    @FXML
+    private void handleOpenSearch() {
+        try {
+            app.showSearchView(user);
+        } catch (IOException exception) {
+            showError("Unable to open the search screen.");
+        }
+    }
+
+    /**
      * Logs out and returns to the login screen.
      */
     @FXML

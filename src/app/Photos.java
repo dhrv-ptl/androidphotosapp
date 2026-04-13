@@ -2,6 +2,7 @@ package app;
 
 import controller.AdminController;
 import controller.AlbumController;
+import controller.SearchController;
 import controller.LoginController;
 import controller.UserAlbumsController;
 import javafx.application.Application;
@@ -126,6 +127,24 @@ public class Photos extends Application {
         controller.setData(data);
         controller.setUser(user);
         controller.setAlbum(album);
+
+        primaryStage.setScene(new Scene(root));
+    }
+
+    /**
+     * Shows the search screen.
+     *
+     * @param user current user
+     * @throws IOException if the view cannot be loaded
+     */
+    public void showSearchView(User user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Photos.class.getResource("/view/search-view.fxml"));
+        Parent root = loader.load();
+
+        SearchController controller = loader.getController();
+        controller.setApp(this);
+        controller.setData(data);
+        controller.setUser(user);
 
         primaryStage.setScene(new Scene(root));
     }

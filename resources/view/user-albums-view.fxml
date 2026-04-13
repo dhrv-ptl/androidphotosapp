@@ -26,6 +26,7 @@
                         <Button onAction="#handleDeleteAlbum" text="Delete Album" />
                         <Button onAction="#handleRenameAlbum" text="Rename Album" />
                         <Button onAction="#handleOpenAlbum" text="Open Album" />
+                        <Button onAction="#handleOpenSearch" text="Search" />
                         <Button onAction="#handleLogout" text="Logout" />
                     </children>
                 </HBox>
