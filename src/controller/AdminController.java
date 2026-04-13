@@ -1,12 +1,17 @@
 package controller;
 
 import app.Photos;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import model.PhotosData;
+import model.User;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Controller for the admin view.
@@ -17,6 +22,9 @@ public class AdminController {
 
     @FXML
     private Label messageLabel;
+
+    @FXML
+    private ListView<String> userListView;
 
     private Photos app;
     private PhotosData data;
@@ -37,9 +45,7 @@ public class AdminController {
      */
     public void setData(PhotosData data) {
         this.data = data;
-        if (messageLabel != null) {
-            messageLabel.setText("Admin user: admin");
-        }
+        refreshUserList();
     }
 
     /**
@@ -47,9 +53,68 @@ public class AdminController {
      */
     @FXML
     private void initialize() {
-        if (data != null) {
-            messageLabel.setText("Admin user: admin");
+        messageLabel.setText("Admin user: admin");
+        refreshUserList();
+    }
+
+    /**
+     * Creates a new user.
+     */
+    @FXML
+    private void handleCreateUser() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Create User");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Username:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isEmpty()) {
+            return;
         }
+
+        String username = result.get().trim();
+        if (username.isEmpty()) {
+            showError("Please enter a username.");
+            return;
+        }
+
+        if ("admin".equals(username) || data.hasUser(username)) {
+            showError("That username already exists.");
+            return;
+        }
+
+        try {
+            data.addUser(username);
+            refreshUserList();
+            userListView.getSelectionModel().select(username);
+        } catch (IllegalArgumentException exception) {
+            showError(exception.getMessage());
+        }
+    }
+
+    /**
+     * Deletes the selected user.
+     */
+    @FXML
+    private void handleDeleteUser() {
+        String selectedUsername = userListView.getSelectionModel().getSelectedItem();
+        if (selectedUsername == null) {
+            showError("Please select a user to delete.");
+            return;
+        }
+
+        if ("admin".equals(selectedUsername)) {
+            showError("The admin user cannot be deleted here.");
+            return;
+        }
+
+        boolean removed = data.removeUser(selectedUsername);
+        if (!removed) {
+            showError("Unable to delete the selected user.");
+            return;
+        }
+
+        refreshUserList();
     }
 
     /**
@@ -64,9 +129,21 @@ public class AdminController {
         }
     }
 
+    private void refreshUserList() {
+        if (userListView == null || data == null) {
+            return;
+        }
+
+        userListView.setItems(FXCollections.observableArrayList(
+                data.getUsers().stream()
+                        .map(User::getUsername)
+                        .toList()
+        ));
+    }
+
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Navigation Error");
+        alert.setTitle("Admin Error");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
