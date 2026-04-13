@@ -12,7 +12,7 @@
       spacing="12">
     <children>
         <Label text="PhotosXX Login" />
-        <TextField promptText="Username" />
-        <Button text="Login" />
+        <TextField fx:id="usernameField" promptText="Username" />
+        <Button onAction="#handleLogin" text="Login" />
     </children>
 </VBox>

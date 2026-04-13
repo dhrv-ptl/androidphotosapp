@@ -1,11 +1,15 @@
 package app;
 
+import controller.AdminController;
 import controller.LoginController;
+import controller.UserAlbumsController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.PhotosData;
+import model.User;
 import util.DataStore;
 
 import java.io.IOException;
@@ -18,6 +22,7 @@ import java.io.IOException;
 public class Photos extends Application {
 
     private PhotosData data;
+    private Stage primaryStage;
 
     /**
      * Starts the application and opens the login screen.
@@ -28,16 +33,10 @@ public class Photos extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         data = DataStore.load();
-
-        FXMLLoader loader = new FXMLLoader(Photos.class.getResource("/view/login-view.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        LoginController controller = loader.getController();
-        controller.setStage(stage);
-
-        stage.setTitle("PhotosXX");
-        stage.setScene(scene);
-        stage.show();
+        primaryStage = stage;
+        primaryStage.setTitle("PhotosXX");
+        showLoginView();
+        primaryStage.show();
     }
 
     /**
@@ -57,6 +56,56 @@ public class Photos extends Application {
      */
     public PhotosData getData() {
         return data;
+    }
+
+    /**
+     * Shows the login screen.
+     *
+     * @throws IOException if the view cannot be loaded
+     */
+    public void showLoginView() throws IOException {
+        FXMLLoader loader = new FXMLLoader(Photos.class.getResource("/view/login-view.fxml"));
+        Parent root = loader.load();
+
+        LoginController controller = loader.getController();
+        controller.setApp(this);
+        controller.setData(data);
+
+        primaryStage.setScene(new Scene(root));
+    }
+
+    /**
+     * Shows the admin screen.
+     *
+     * @throws IOException if the view cannot be loaded
+     */
+    public void showAdminView() throws IOException {
+        FXMLLoader loader = new FXMLLoader(Photos.class.getResource("/view/admin-view.fxml"));
+        Parent root = loader.load();
+
+        AdminController controller = loader.getController();
+        controller.setApp(this);
+        controller.setData(data);
+
+        primaryStage.setScene(new Scene(root));
+    }
+
+    /**
+     * Shows the user albums screen.
+     *
+     * @param user logged-in user
+     * @throws IOException if the view cannot be loaded
+     */
+    public void showUserAlbumsView(User user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Photos.class.getResource("/view/user-albums-view.fxml"));
+        Parent root = loader.load();
+
+        UserAlbumsController controller = loader.getController();
+        controller.setApp(this);
+        controller.setData(data);
+        controller.setUser(user);
+
+        primaryStage.setScene(new Scene(root));
     }
 
     /**
