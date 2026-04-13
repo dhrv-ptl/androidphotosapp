@@ -1,0 +1,9 @@
+{
+  "name": "IronTrack - Gym Training Tracker",
+  "description": "A comprehensive gym training tracker with program management, session logging, and performance analytics.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}

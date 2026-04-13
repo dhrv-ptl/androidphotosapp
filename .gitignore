@@ -1,0 +1,17 @@
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# OS
+.DS_Store
+
+# Build
+build/
+target/
+
+# JavaFX / misc
+*.class
+
+# Serialized runtime data
+data/photos-data.ser
