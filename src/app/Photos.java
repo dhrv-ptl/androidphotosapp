@@ -1,6 +1,7 @@
 package app;
 
 import controller.AdminController;
+import controller.AlbumController;
 import controller.LoginController;
 import controller.UserAlbumsController;
 import javafx.application.Application;
@@ -8,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.Album;
 import model.PhotosData;
 import model.User;
 import util.DataStore;
@@ -104,6 +106,26 @@ public class Photos extends Application {
         controller.setApp(this);
         controller.setData(data);
         controller.setUser(user);
+
+        primaryStage.setScene(new Scene(root));
+    }
+
+    /**
+     * Shows the album screen.
+     *
+     * @param user current user
+     * @param album selected album
+     * @throws IOException if the view cannot be loaded
+     */
+    public void showAlbumView(User user, Album album) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Photos.class.getResource("/view/album-view.fxml"));
+        Parent root = loader.load();
+
+        AlbumController controller = loader.getController();
+        controller.setApp(this);
+        controller.setData(data);
+        controller.setUser(user);
+        controller.setAlbum(album);
 
         primaryStage.setScene(new Scene(root));
     }
