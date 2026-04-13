@@ -144,6 +144,24 @@ public class Photo implements Serializable {
         return tags.contains(new Tag(definition, value));
     }
 
+    /**
+     * Removes all tags of one tag type from the photo.
+     *
+     * @param tagTypeName tag type name
+     * @return true if any tags were removed
+     */
+    public boolean removeTagsByType(String tagTypeName) {
+        String normalizedType = normalizeRequired(tagTypeName, "tagTypeName");
+        boolean removed = false;
+        Set<Tag> currentTags = new LinkedHashSet<>(tags);
+        for (Tag tag : currentTags) {
+            if (tag.getTypeName().equals(normalizedType)) {
+                removed |= tags.remove(tag);
+            }
+        }
+        return removed;
+    }
+
     private static LocalDate readPhotoDate(String absoluteFilePath) {
         Path path = Path.of(absoluteFilePath);
         if (!Files.exists(path)) {

@@ -4,25 +4,37 @@ import app.Photos;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import model.Album;
 import model.Photo;
 import model.PhotosData;
+import model.Tag;
+import model.TagDefinition;
 import model.User;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -33,6 +45,9 @@ import java.util.Optional;
  * @author Dhruv Patel
  */
 public class AlbumController {
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private static final String NEW_TAG_TYPE_OPTION = "Create New Tag Type...";
 
     @FXML
     private Label albumLabel;
@@ -47,7 +62,13 @@ public class AlbumController {
     private Label captionLabel;
 
     @FXML
+    private Label dateLabel;
+
+    @FXML
     private Label pathLabel;
+
+    @FXML
+    private ListView<Tag> tagListView;
 
     private Photos app;
     private PhotosData data;
@@ -132,6 +153,18 @@ public class AlbumController {
             }
         });
 
+        tagListView.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(Tag tag, boolean empty) {
+                super.updateItem(tag, empty);
+                if (empty || tag == null) {
+                    setText(null);
+                    return;
+                }
+                setText(tag.getTypeName() + ": " + tag.getValue());
+            }
+        });
+
         photoListView.getSelectionModel().selectedItemProperty().addListener((observable, oldPhoto, newPhoto) ->
                 updateSelectedPhotoDetails(newPhoto));
         updateMessage();
@@ -213,6 +246,69 @@ public class AlbumController {
         }
 
         selectedPhoto.setCaption(result.get());
+        refreshPhotoList(selectedPhoto.getAbsoluteFilePath());
+    }
+
+    /**
+     * Adds a tag to the selected photo.
+     */
+    @FXML
+    private void handleAddTag() {
+        Photo selectedPhoto = getSelectedPhoto();
+        if (selectedPhoto == null) {
+            showError("Please select a photo first.");
+            return;
+        }
+
+        TagInput tagInput = showAddTagDialog();
+        if (tagInput == null) {
+            return;
+        }
+
+        try {
+            TagDefinition definition = resolveTagDefinition(tagInput);
+            if (!definition.isMultiValue() && selectedPhoto.hasTagType(definition.getName())) {
+                if (!confirmSingleValueReplacement(definition.getName())) {
+                    return;
+                }
+                selectedPhoto.removeTagsByType(definition.getName());
+            }
+
+            boolean added = selectedPhoto.addTag(definition, tagInput.value());
+            if (!added) {
+                showError("That tag already exists on this photo.");
+                return;
+            }
+
+            refreshPhotoList(selectedPhoto.getAbsoluteFilePath());
+        } catch (IllegalArgumentException exception) {
+            showError(exception.getMessage());
+        }
+    }
+
+    /**
+     * Deletes the selected tag from the selected photo.
+     */
+    @FXML
+    private void handleDeleteTag() {
+        Photo selectedPhoto = getSelectedPhoto();
+        if (selectedPhoto == null) {
+            showError("Please select a photo first.");
+            return;
+        }
+
+        Tag selectedTag = tagListView.getSelectionModel().getSelectedItem();
+        if (selectedTag == null) {
+            showError("Please select a tag to delete.");
+            return;
+        }
+
+        boolean removed = selectedPhoto.removeTag(selectedTag.getDefinition(), selectedTag.getValue());
+        if (!removed) {
+            showError("Unable to delete the selected tag.");
+            return;
+        }
+
         refreshPhotoList(selectedPhoto.getAbsoluteFilePath());
     }
 
@@ -332,21 +428,30 @@ public class AlbumController {
     }
 
     private void updateSelectedPhotoDetails(Photo photo) {
-        if (previewImageView == null || captionLabel == null || pathLabel == null) {
+        if (previewImageView == null || captionLabel == null || dateLabel == null
+                || pathLabel == null || tagListView == null) {
             return;
         }
 
         if (photo == null) {
             previewImageView.setImage(null);
             captionLabel.setText("Caption: ");
+            dateLabel.setText("Date: ");
             pathLabel.setText("Path: ");
+            tagListView.setItems(FXCollections.observableArrayList());
             return;
         }
 
         previewImageView.setImage(loadImage(photo, 420, 320));
         String caption = photo.getCaption().isBlank() ? "(No caption)" : photo.getCaption();
         captionLabel.setText("Caption: " + caption);
+        dateLabel.setText("Date: " + formatDate(photo.getPhotoDate()));
         pathLabel.setText("Path: " + photo.getAbsoluteFilePath());
+        tagListView.setItems(FXCollections.observableArrayList(
+                photo.getTags().stream()
+                        .sorted(Comparator.comparing(Tag::getTypeName).thenComparing(Tag::getValue))
+                        .toList()
+        ));
     }
 
     private Photo getSelectedPhoto() {
@@ -419,11 +524,133 @@ public class AlbumController {
                 || lowerCasePath.endsWith(".png");
     }
 
+    private TagInput showAddTagDialog() {
+        Dialog<TagInput> dialog = new Dialog<>();
+        dialog.setTitle("Add Tag");
+        dialog.setHeaderText(null);
+
+        ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+        ComboBox<String> typeComboBox = new ComboBox<>();
+        typeComboBox.getItems().addAll(
+                data.getTagDefinitions().stream()
+                        .map(TagDefinition::getName)
+                        .sorted()
+                        .toList()
+        );
+        typeComboBox.getItems().add(NEW_TAG_TYPE_OPTION);
+        if (!typeComboBox.getItems().isEmpty()) {
+            typeComboBox.getSelectionModel().selectFirst();
+        }
+
+        Label typeNameLabel = new Label("New type name:");
+        TextField typeNameField = new TextField();
+        CheckBox multiValueCheckBox = new CheckBox("Multi-value tag type");
+        Label valueLabel = new Label("Value:");
+        TextField valueField = new TextField();
+
+        typeNameLabel.setVisible(false);
+        typeNameLabel.setManaged(false);
+        typeNameField.setVisible(false);
+        typeNameField.setManaged(false);
+        multiValueCheckBox.setVisible(false);
+        multiValueCheckBox.setManaged(false);
+
+        typeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            boolean createNew = NEW_TAG_TYPE_OPTION.equals(newValue);
+            typeNameLabel.setVisible(createNew);
+            typeNameLabel.setManaged(createNew);
+            typeNameField.setVisible(createNew);
+            typeNameField.setManaged(createNew);
+            multiValueCheckBox.setVisible(createNew);
+            multiValueCheckBox.setManaged(createNew);
+        });
+
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.add(new Label("Tag type:"), 0, 0);
+        gridPane.add(typeComboBox, 1, 0);
+        gridPane.add(typeNameLabel, 0, 1);
+        gridPane.add(typeNameField, 1, 1);
+        gridPane.add(multiValueCheckBox, 1, 2);
+        gridPane.add(valueLabel, 0, 3);
+        gridPane.add(valueField, 1, 3);
+
+        dialog.getDialogPane().setContent(gridPane);
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType != addButtonType) {
+                return null;
+            }
+
+            String selectedType = typeComboBox.getValue();
+            if (selectedType == null || selectedType.isBlank()) {
+                throw new IllegalArgumentException("Please choose a tag type.");
+            }
+
+            String value = valueField.getText() == null ? "" : valueField.getText().trim();
+            if (value.isEmpty()) {
+                throw new IllegalArgumentException("Please enter a tag value.");
+            }
+
+            if (NEW_TAG_TYPE_OPTION.equals(selectedType)) {
+                String newTypeName = typeNameField.getText() == null ? "" : typeNameField.getText().trim();
+                if (newTypeName.isEmpty()) {
+                    throw new IllegalArgumentException("Please enter a new tag type name.");
+                }
+                return new TagInput(newTypeName, value, true, multiValueCheckBox.isSelected());
+            }
+
+            return new TagInput(selectedType, value, false, false);
+        });
+
+        try {
+            Optional<TagInput> result = dialog.showAndWait();
+            return result.orElse(null);
+        } catch (IllegalArgumentException exception) {
+            showError(exception.getMessage());
+            return null;
+        }
+    }
+
+    private TagDefinition resolveTagDefinition(TagInput tagInput) {
+        if (tagInput.newType()) {
+            TagDefinition existingDefinition = data.getTagDefinition(tagInput.typeName());
+            if (existingDefinition != null) {
+                return existingDefinition;
+            }
+            return data.addUserTagDefinition(tagInput.typeName(), tagInput.multiValue());
+        }
+
+        TagDefinition definition = data.getTagDefinition(tagInput.typeName());
+        if (definition == null) {
+            throw new IllegalArgumentException("The selected tag type does not exist.");
+        }
+        return definition;
+    }
+
+    private String formatDate(LocalDate date) {
+        return date == null ? "N/A" : DATE_FORMATTER.format(date);
+    }
+
+    private boolean confirmSingleValueReplacement(String tagTypeName) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Replace Tag");
+        alert.setHeaderText(null);
+        alert.setContentText("The tag type \"" + tagTypeName + "\" allows only one value. Replace the current value?");
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Album Error");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private record TagInput(String typeName, String value, boolean newType, boolean multiValue) {
     }
 }

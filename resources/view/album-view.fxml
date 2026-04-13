@@ -36,7 +36,10 @@
                     <children>
                         <ImageView fx:id="previewImageView" fitHeight="320.0" fitWidth="420.0" pickOnBounds="true" preserveRatio="true" />
                         <Label fx:id="captionLabel" text="Caption:" wrapText="true" />
+                        <Label fx:id="dateLabel" text="Date:" wrapText="true" />
                         <Label fx:id="pathLabel" text="Path:" wrapText="true" />
+                        <Label text="Tags:" />
+                        <ListView fx:id="tagListView" prefHeight="140.0" prefWidth="420.0" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                             <children>
                                 <Button onAction="#handlePreviousPhoto" text="Previous" />
@@ -46,6 +49,8 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10">
                             <children>
+                                <Button onAction="#handleAddTag" text="Add Tag" />
+                                <Button onAction="#handleDeleteTag" text="Delete Tag" />
                                 <Button onAction="#handleCopyPhoto" text="Copy To Album" />
                                 <Button onAction="#handleMovePhoto" text="Move To Album" />
                                 <Button onAction="#handleBack" text="Back" />
