@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.Album;
 import model.PhotosData;
@@ -48,7 +49,11 @@ public class Photos extends Application {
     @Override
     public void stop() {
         if (data != null) {
-            DataStore.save(data);
+            try {
+                DataStore.save(data);
+            } catch (IllegalStateException exception) {
+                // Exit-time save failure cannot be recovered here without broader UI changes.
+            }
         }
     }
 
@@ -59,6 +64,25 @@ public class Photos extends Application {
      */
     public PhotosData getData() {
         return data;
+    }
+
+    /**
+     * Saves application data and shows a GUI error if saving fails.
+     *
+     * @return true if save succeeded
+     */
+    public boolean saveData() {
+        try {
+            DataStore.save(data);
+            return true;
+        } catch (IllegalStateException exception) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Save Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Unable to save application data.");
+            alert.showAndWait();
+            return false;
+        }
     }
 
     /**

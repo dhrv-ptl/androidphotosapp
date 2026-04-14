@@ -193,6 +193,9 @@ public class UserAlbumsController {
      */
     @FXML
     private void handleLogout() {
+        if (!app.saveData()) {
+            return;
+        }
         try {
             app.showLoginView();
         } catch (IOException exception) {
