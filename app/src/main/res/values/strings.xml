@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Android Photos</string>
+    <string name="home_title">Albums</string>
+    <string name="create_album">Create Album</string>
+    <string name="create">Create</string>
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="rename_album">Rename</string>
+    <string name="delete_album">Delete</string>
+    <string name="album_name_hint">Album name</string>
+    <string name="no_albums">No albums yet. Tap Create Album to add one.</string>
+    <string name="error_album_blank">Album name cannot be blank.</string>
+    <string name="error_album_duplicate">Album name already exists.</string>
+    <string name="error_save_failed">Unable to save data.</string>
+    <string name="delete_album_message">Delete \"%1$s\"?</string>
+    <string name="album_stub_message">Album screen stub. Photo thumbnails and actions will go here next.</string>
+    <string name="album_missing">Album</string>
+</resources>
