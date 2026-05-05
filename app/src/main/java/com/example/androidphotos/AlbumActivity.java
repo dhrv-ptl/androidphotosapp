@@ -94,7 +94,7 @@ public class AlbumActivity extends AppCompatActivity {
         addPhotoButton.setOnClickListener(view -> launchPhotoPicker());
         photoListView.setOnItemClickListener((parent, view, position, id) -> openPhoto(position));
         photoListView.setOnItemLongClickListener((parent, view, position, id) -> {
-            showRemovePhotoDialog(position);
+            showPhotoOptionsDialog(position);
             return true;
         });
 
@@ -130,8 +130,26 @@ public class AlbumActivity extends AppCompatActivity {
         pickPhotoLauncher.launch(intent);
     }
 
-    private void showRemovePhotoDialog(int photoIndex) {
+    private void showPhotoOptionsDialog(int photoIndex) {
         Photo photo = photoItems.get(photoIndex);
+        String[] options = {
+                getString(R.string.move_photo),
+                getString(R.string.remove_photo)
+        };
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(photo.getDisplayName())
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        showMovePhotoDialog(photo);
+                    } else if (which == 1) {
+                        showRemovePhotoDialog(photo);
+                    }
+                })
+                .show();
+    }
+
+    private void showRemovePhotoDialog(Photo photo) {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.remove_photo)
                 .setMessage(getString(R.string.remove_photo_message, photo.getDisplayName()))
@@ -141,6 +159,37 @@ public class AlbumActivity extends AppCompatActivity {
                     persistAndRefresh();
                 })
                 .show();
+    }
+
+    private void showMovePhotoDialog(Photo photo) {
+        List<Album> albums = appData.getAlbums();
+        List<String> destinationNames = new ArrayList<>();
+        for (int i = 0; i < albums.size(); i++) {
+            if (i != albumIndex) {
+                destinationNames.add(albums.get(i).getName());
+            }
+        }
+
+        if (destinationNames.isEmpty()) {
+            Toast.makeText(this, R.string.error_no_destination_albums, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] destinations = destinationNames.toArray(new String[0]);
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.move_photo)
+                .setItems(destinations, (dialog, which) -> movePhotoToAlbum(photo, destinations[which]))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void movePhotoToAlbum(Photo photo, String destinationAlbumName) {
+        boolean moved = appData.movePhoto(album.getName(), destinationAlbumName, photo.getUriString());
+        if (!moved) {
+            Toast.makeText(this, R.string.error_move_photo_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        persistAndRefresh();
     }
 
     private void openPhoto(int photoIndex) {

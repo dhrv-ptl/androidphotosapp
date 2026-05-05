@@ -15,6 +15,7 @@
     <string name="delete_album_message">Delete \"%1$s\"?</string>
     <string name="album_missing">Album</string>
     <string name="add_photo">Add Photo</string>
+    <string name="move_photo">Move Photo</string>
     <string name="remove_photo">Remove Photo</string>
     <string name="remove">Remove</string>
     <string name="remove_photo_message">Remove \"%1$s\" from this album?</string>
@@ -38,4 +39,6 @@
     <string name="error_photo_not_found">Photo could not be opened.</string>
     <string name="error_photo_pick_failed">Unable to read the selected photo.</string>
     <string name="error_photo_duplicate">That photo is already in this album.</string>
+    <string name="error_no_destination_albums">Create another album first.</string>
+    <string name="error_move_photo_failed">Unable to move that photo.</string>
 </resources>
