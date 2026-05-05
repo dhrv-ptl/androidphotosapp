@@ -1,4 +1,4 @@
-package androidphotos;
+package com.example.androidphotos;
 
 import android.os.Bundle;
 import android.widget.TextView;

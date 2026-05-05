@@ -1,4 +1,4 @@
-package androidphotos;
+package com.example.androidphotos;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,9 +17,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidphotos.model.Album;
-import androidphotos.model.AppData;
-import androidphotos.storage.DataStore;
+import com.example.androidphotos.model.Album;
+import com.example.androidphotos.model.AppData;
+import com.example.androidphotos.storage.DataStore;
 
 /**
  * Home screen that lists albums and supports basic album management.

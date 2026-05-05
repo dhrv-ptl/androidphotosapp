@@ -1,8 +1,8 @@
-package androidphotos.storage;
+package com.example.androidphotos.storage;
 
 import android.content.Context;
 
-import androidphotos.model.AppData;
+import com.example.androidphotos.model.AppData;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

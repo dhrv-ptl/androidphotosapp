@@ -1,4 +1,4 @@
-package androidphotos.model;
+package com.example.androidphotos.model;
 
 import java.io.Serial;
 import java.io.Serializable;
