@@ -5,3 +5,9 @@ app/build/
 out/
 *.iml
 .DS_Store
+
+# IDE files
+.idea/
+
+# Local serialized test data
+data/*.ser
