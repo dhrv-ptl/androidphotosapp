@@ -1,6 +1,5 @@
 package com.example.androidphotos;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +14,7 @@ import com.example.androidphotos.model.Album;
 import com.example.androidphotos.model.AppData;
 import com.example.androidphotos.model.Photo;
 import com.example.androidphotos.storage.DataStore;
+import com.example.androidphotos.util.ImageLoader;
 
 /**
  * Displays a selected photo and lets the user move backward or forward.
@@ -99,11 +99,7 @@ public class PhotoActivity extends AppCompatActivity {
 
         Photo photo = photos.get(photoIndex);
         photoNameTextView.setText(photo.getDisplayName());
-        photoImageView.setImageDrawable(null);
-        photoImageView.setImageURI(Uri.parse(photo.getUriString()));
-        if (photoImageView.getDrawable() == null) {
-            photoImageView.setImageResource(android.R.drawable.ic_menu_gallery);
-        }
+        ImageLoader.loadLargeImage(this, photoImageView, photo.getUriString());
 
         previousButton.setEnabled(photoIndex > 0);
         nextButton.setEnabled(photoIndex < photos.size() - 1);

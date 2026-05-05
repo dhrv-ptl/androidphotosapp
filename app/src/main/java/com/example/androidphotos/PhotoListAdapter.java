@@ -1,7 +1,6 @@
 package com.example.androidphotos;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +11,19 @@ import android.widget.TextView;
 import java.util.List;
 
 import com.example.androidphotos.model.Photo;
+import com.example.androidphotos.util.ImageLoader;
 
 /**
  * Simple ListView adapter for album photo rows.
  */
 public class PhotoListAdapter extends BaseAdapter {
 
+    private final Context context;
     private final LayoutInflater inflater;
     private final List<Photo> photos;
 
     public PhotoListAdapter(Context context, List<Photo> photos) {
+        this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.photos = photos;
     }
@@ -59,11 +61,7 @@ public class PhotoListAdapter extends BaseAdapter {
     }
 
     private void bindThumbnail(ImageView imageView, Photo photo) {
-        imageView.setImageDrawable(null);
-        imageView.setImageURI(Uri.parse(photo.getUriString()));
-        if (imageView.getDrawable() == null) {
-            imageView.setImageResource(android.R.drawable.ic_menu_gallery);
-        }
+        ImageLoader.loadThumbnail(context, imageView, photo.getUriString());
     }
 
     private static class ViewHolder {
