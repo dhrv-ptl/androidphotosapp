@@ -7,6 +7,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidPhotos">
         <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".PhotoActivity"
             android:exported="false" />
         <activity

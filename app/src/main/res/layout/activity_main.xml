@@ -20,6 +20,13 @@
         android:layout_marginTop="12dp"
         android:text="@string/create_album" />
 
+    <Button
+        android:id="@+id/button_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/search_photos" />
+
     <TextView
         android:id="@+id/text_empty_albums"
         android:layout_width="match_parent"

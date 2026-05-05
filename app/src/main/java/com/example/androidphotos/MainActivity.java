@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         appData = DataStore.load(this);
 
         Button createAlbumButton = findViewById(R.id.button_create_album);
+        Button searchButton = findViewById(R.id.button_search);
         ListView albumListView = findViewById(R.id.list_albums);
         TextView emptyView = findViewById(R.id.text_empty_albums);
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         albumListView.setEmptyView(emptyView);
 
         createAlbumButton.setOnClickListener(view -> showCreateAlbumDialog());
+        searchButton.setOnClickListener(view -> openSearch());
         albumListView.setOnItemClickListener((parent, view, position, id) -> openAlbum(position));
         albumListView.setOnItemLongClickListener((parent, view, position, id) -> {
             showAlbumOptionsDialog(position);
@@ -153,6 +155,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AlbumActivity.class);
         intent.putExtra(AlbumActivity.EXTRA_ALBUM_NAME, albumName);
         intent.putExtra(AlbumActivity.EXTRA_ALBUM_INDEX, position);
+        startActivity(intent);
+    }
+
+    private void openSearch() {
+        Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
 

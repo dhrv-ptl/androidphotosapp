@@ -2,6 +2,7 @@
     <string name="app_name">Android Photos</string>
     <string name="home_title">Albums</string>
     <string name="create_album">Create Album</string>
+    <string name="search_photos">Search Photos</string>
     <string name="create">Create</string>
     <string name="rename">Rename</string>
     <string name="delete">Delete</string>
@@ -23,6 +24,15 @@
     <string name="photo_default_name">Photo</string>
     <string name="photo_thumbnail">Photo thumbnail</string>
     <string name="photo_full_image">Full-size photo</string>
+    <string name="search_mode_label">Search mode</string>
+    <string name="first_criteria_label">First tag-value pair</string>
+    <string name="second_criteria_label">Second tag-value pair</string>
+    <string name="search_value_hint">Start typing a tag value</string>
+    <string name="run_search">Search</string>
+    <string name="no_search_results">No matching photos.</string>
+    <string name="search_result_album">Album: %1$s</string>
+    <string name="error_search_first_blank">Enter the first tag value.</string>
+    <string name="error_search_second_blank">Enter the second tag value.</string>
     <string name="previous_photo">Previous</string>
     <string name="next_photo">Next</string>
     <string name="tags_label">Tags</string>
