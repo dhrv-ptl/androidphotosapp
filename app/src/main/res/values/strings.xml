@@ -24,6 +24,16 @@
     <string name="photo_full_image">Full-size photo</string>
     <string name="previous_photo">Previous</string>
     <string name="next_photo">Next</string>
+    <string name="tags_label">Tags</string>
+    <string name="add_tag">Add Tag</string>
+    <string name="add">Add</string>
+    <string name="delete_tag">Delete Tag</string>
+    <string name="delete_tag_message">Delete tag \"%1$s\"?</string>
+    <string name="no_tags">No tags yet. Long press a tag to delete it.</string>
+    <string name="tag_value_hint">Tag value</string>
+    <string name="add_tag_type_title">Add %1$s tag</string>
+    <string name="error_tag_blank">Tag value cannot be blank.</string>
+    <string name="error_tag_duplicate">That tag already exists on this photo.</string>
     <string name="error_album_not_found">Album could not be opened.</string>
     <string name="error_photo_not_found">Photo could not be opened.</string>
     <string name="error_photo_pick_failed">Unable to read the selected photo.</string>
