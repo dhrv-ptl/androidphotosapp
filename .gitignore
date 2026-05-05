@@ -1,17 +1,7 @@
-# IntelliJ
-.idea/
-*.iml
-out/
-
-# OS
-.DS_Store
-
-# Build
+.gradle/
+local.properties
 build/
-target/
-
-# JavaFX / misc
-*.class
-
-# Serialized runtime data
-data/photos-data.ser
+app/build/
+out/
+*.iml
+.DS_Store
