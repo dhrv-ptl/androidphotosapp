@@ -13,6 +13,19 @@
     <string name="error_album_duplicate">Album name already exists.</string>
     <string name="error_save_failed">Unable to save data.</string>
     <string name="delete_album_message">Delete \"%1$s\"?</string>
-    <string name="album_stub_message">Album screen stub. Photo thumbnails and actions will go here next.</string>
     <string name="album_missing">Album</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="remove_photo">Remove Photo</string>
+    <string name="remove">Remove</string>
+    <string name="remove_photo_message">Remove \"%1$s\" from this album?</string>
+    <string name="no_photos">No photos yet. Tap Add Photo to add one.</string>
+    <string name="photo_default_name">Photo</string>
+    <string name="photo_thumbnail">Photo thumbnail</string>
+    <string name="photo_full_image">Full-size photo</string>
+    <string name="previous_photo">Previous</string>
+    <string name="next_photo">Next</string>
+    <string name="error_album_not_found">Album could not be opened.</string>
+    <string name="error_photo_not_found">Photo could not be opened.</string>
+    <string name="error_photo_pick_failed">Unable to read the selected photo.</string>
+    <string name="error_photo_duplicate">That photo is already in this album.</string>
 </resources>
